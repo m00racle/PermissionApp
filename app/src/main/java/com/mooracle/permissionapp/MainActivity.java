@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
 
         // set the data attribute the tel: and number:
         intent.setData(Uri.parse("tel:" + "12345678"));
+
+        // check if under marshmallow skip the permission check:
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            //this is not recommended but this should be okay since after start activity this activity will be paused
+            startActivity(intent);
+        }
 
         // start the new activity using the intent: (promptly will invoke error due lack of permission)
         // Fix add permission check
