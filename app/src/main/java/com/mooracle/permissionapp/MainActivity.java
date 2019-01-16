@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo: shift the permission check into this method for more memory efficiency.
+                // shift the permission check into this method for more memory efficiency.
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
                     //if the android version is lower than Marshmallow:
                     makeCall();
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                             ActivityCompat.requestPermissions(MainActivity.this,
                                     new String[]{Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CODE);
                         }
-                    }
+                    }else{makeCall();}
                 }
             }
         });
