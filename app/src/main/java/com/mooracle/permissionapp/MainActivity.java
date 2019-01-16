@@ -38,15 +38,18 @@ public class MainActivity extends AppCompatActivity {
 
     // make a separate method to make a call and call this method from the on click listeners
     private void makeCall() {
-        // make an intent to action call:
-        Intent intent = new Intent(Intent.ACTION_CALL);
 
-        // set the data attribute the tel: and number:
-        intent.setData(Uri.parse("tel:" + "12345678"));
 
         // check if under marshmallow skip the permission check:
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
             //this is not recommended but this should be okay since after start activity this activity will be paused
+
+            // make an intent to action call:
+            Intent intent = new Intent(Intent.ACTION_CALL);
+
+            // set the data attribute the tel: and number:
+            intent.setData(Uri.parse("tel:" + "12345678"));
+
             startActivity(intent);
         }
 
@@ -77,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
                         }).show();
             }// set else scenario thus lock the app if finally the user click deny and not to ask again:
             else {
+                //todo: Add warning that the user already set to deny the permission
+                //    that this can only be fixed from setting>app, find the permission App settings and change the
+                //    permissions to give access to call
+
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
                 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -88,7 +95,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-        }else {startActivity(intent);}
+        }else {
+            // make an intent to action call:
+            Intent intent = new Intent(Intent.ACTION_CALL);
+
+            // set the data attribute the tel: and number:
+            intent.setData(Uri.parse("tel:" + "12345678"));
+
+            startActivity(intent);
+        }
 
     }
 
