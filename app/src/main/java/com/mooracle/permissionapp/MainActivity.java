@@ -25,45 +25,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // instantiate the call button object from the activity main layout:
-        Button callButon = findViewById(R.id.callButton);
+        Button callButton = findViewById(R.id.callButton);
 
         // set on click listeners for the call button and make it call a number:
-        callButon.setOnClickListener(new View.OnClickListener() {
+        callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // shift the permission check into this method for more memory efficiency.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
-                    //if the android version is lower than Marshmallow:
-                    makeCall();
-                }else {
-                    if (ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-                        // set the message
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                                Manifest.permission.CALL_PHONE)){
-                            new AlertDialog.Builder(MainActivity.this).setTitle("Call Permission Needed")
-                                    .setMessage("Permission to Call is needed for the app to work, Will you grant one?")
-                                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            ActivityCompat.requestPermissions(MainActivity.this,
-                                                    new String[]{Manifest.permission.CALL_PHONE},
-                                                    PERMISSIONS_REQUEST_CODE);
-                                        }
-                                    })
-                                    .setNegativeButton("Nope, Sorry", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Toast.makeText(MainActivity.this,
-                                                    "Sorry, the app cannot operate with no call permission :(",
-                                                    Toast.LENGTH_LONG).show();
-                                        }
-                                    }).show();
-                        }else{
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.CALL_PHONE}, PERMISSIONS_REQUEST_CODE);
-                        }
-                    }else{makeCall();}
-                }
+                makeCall();
             }
         });
     }
@@ -76,12 +44,57 @@ public class MainActivity extends AppCompatActivity {
         // set the data attribute the tel: and number:
         intent.setData(Uri.parse("tel:" + "12345678"));
 
+        // check if under marshmallow skip the permission check:
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            //this is not recommended but this should be okay since after start activity this activity will be paused
+            startActivity(intent);
+        }
+
         // start the new activity using the intent: (promptly will invoke error due lack of permission)
-         startActivity(intent);
+        // Fix add permission check
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            // set a message using the latest Activity compat shouldshowRequestPermissionRationale method:
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)){
+                // set message
+                new AlertDialog.Builder(this).setTitle("Call Permission Needed")
+                        .setMessage("The app needs your permission to call, please grant it")
+                        .setPositiveButton("Yep", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // recall the request permission:
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                                        Manifest.permission.CALL_PHONE
+                                }, PERMISSIONS_REQUEST_CODE);
+                            }
+                        })
+                        .setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(MainActivity.this,
+                                        "Sorry, the app cannot operate with no call permission :(",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }).show();
+            }// set else scenario thus lock the app if finally the user click deny and not to ask again:
+            else {
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
+                        PERMISSIONS_REQUEST_CODE);
+            }
+
+
+        }else {startActivity(intent);}
 
     }
 
     // override method to handle the request permission results from makeCall method permission check:
+    //note since there is only one permission asked then we do not need a case just if statement
+    //in the case that there are more than one permission in question we need to use case switch statement.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // check if the requestCode is not null and same as PERMISSION_REQUEST_CODE
