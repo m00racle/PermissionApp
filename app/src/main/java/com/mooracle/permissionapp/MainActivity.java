@@ -25,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // instantiate the call button object from the activity main layout:
-        Button callButon = findViewById(R.id.callButton);
+        Button callButton = findViewById(R.id.callButton);
 
         // set on click listeners for the call button and make it call a number:
-        callButon.setOnClickListener(new View.OnClickListener() {
+        callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 makeCall();
@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // override method to handle the request permission results from makeCall method permission check:
+    //note since there is only one permission asked then we do not need a case just if statement
+    //in the case that there are more than one permission in question we need to use case switch statement.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // check if the requestCode is not null and same as PERMISSION_REQUEST_CODE
