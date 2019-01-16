@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_REQUEST_CODE = 11;
+    private int callButtonClickCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     // make a separate method to make a call and call this method from the on click listeners
     private void makeCall() {
-
+        //add the counter
+        callButtonClickCounter += 1;
 
         // check if under marshmallow skip the permission check:
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
@@ -80,10 +82,22 @@ public class MainActivity extends AppCompatActivity {
                         }).show();
             }// set else scenario thus lock the app if finally the user click deny and not to ask again:
             else {
-                //todo: Add warning that the user already set to deny the permission
+                // Add warning that the user already set to deny the permission
                 //    that this can only be fixed from setting>app, find the permission App settings and change the
                 //    permissions to give access to call
+                if (callButtonClickCounter > 1){
+                    new AlertDialog.Builder(this).setTitle("Error")
+                            .setMessage("The app need permission to access the Phone Call, " +
+                                    "Unfortunately the last setting was fix to deny access to it, " +
+                                    "The app requires you to change the permission through Settings>App, " +
+                                    "Then change the permission setting to Permission App")
+                            .setPositiveButton("Okay, I get it", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
+                                }
+                            }).show();
+                }
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
                 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
